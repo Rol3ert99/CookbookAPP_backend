@@ -4,6 +4,8 @@ from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 import os
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 
@@ -32,7 +34,7 @@ class IdeasRequest(BaseModel):
     ingredients: list
 
 
-@app.get("/ideas")
+@app.post("/ideas")
 def get_ideas(payload: IdeasRequest):
 
     ideas_prompt = PromptTemplate.from_template(
