@@ -110,7 +110,7 @@ def get_steps(payload: StepsRequest):
 
         Response structure:
         {{
-        "steps": [{1: "step 1 text"}, {2: "step 2 text"}, ...]
+        "steps": [{{1: "step 1 text"}}, {{2: "step 2 text"}}, ...]
         }}
 
         Your response must be a valid JSON object in the above format, and nothing else.
