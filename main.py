@@ -33,6 +33,10 @@ llm = ChatOpenAI(
 class IdeasRequest(BaseModel):
     ingredients: list
 
+class StepsRequest(BaseModel):
+    name: str
+    ingredients: list
+
 
 @app.post("/ideas")
 def get_ideas(payload: IdeasRequest):
@@ -90,3 +94,39 @@ def get_ideas(payload: IdeasRequest):
 
     ideas = json.loads(result.content)
     return ideas
+
+
+@app.post("/steps")
+def get_steps(payload: StepsRequest):
+    steps_prompt = PromptTemplate.from_template(
+        """
+        You are an AI consultant specializing in cooking.
+        Prepare the steps for preparing the dish. Below you have the name of the dish and all the necessary ingredients.
+        Return the result in JSON format according to the structure below.
+
+        dish name: {dish_name}
+
+        ingredients: {ingredients}
+
+        Response structure:
+        {{
+        "steps": [{1: "step 1 text"}, {2: "step 2 text"}, ...]
+        }}
+
+        Your response must be a valid JSON object in the above format, and nothing else.
+        IMPORTANT: Do not include any explanations or additional text outside of this JSON object.
+        """
+    )
+
+    dish_name = payload.name
+    ingredients = payload.ingredients
+
+    steps_chain = steps_prompt | llm
+
+    result = steps_chain.invoke({
+        "dish_name": dish_name,
+        "ingredients": ingredients
+    })
+
+    steps = json.loads(result.content)
+    return steps
